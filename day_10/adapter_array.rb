@@ -33,15 +33,11 @@ class Adapter_Array
     end
 
     def ways_to_reach_charger(adapter)
-        @ways_to_reach_charger = { 0 => 1 } unless @ways_to_reach_charger
-        ways = @ways_to_reach_charger[adapter]
-        return ways if ways
+        @memorized_ways = { 0 => 1 } unless @memorized_ways
+        return @memorized_ways[adapter] if @memorized_ways[adapter]
         
-        connections = valid_connections(adapter)
-        ways = connections.sum do |connection| 
-            ways_to_reach_charger(connection)
-        end
-        @ways_to_reach_charger[adapter] = ways 
+        @memorized_ways[adapter] = valid_connections(adapter)
+            .sum { |connection| ways_to_reach_charger(connection) }
     end
 
     def valid_connections(adapter)
