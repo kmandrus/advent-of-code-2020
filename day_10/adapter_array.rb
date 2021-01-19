@@ -12,29 +12,35 @@ class Adapter_Array
         adapter_ratings = File.readlines(filepath, chomp: true)
             .map(&:to_i)
             .sort
+        add_charger_and_device_ratings!(adapter_ratings)
+    end
 
+    def add_charger_and_device_ratings!(adapter_ratings)
         adapter_ratings
             .unshift(0)
             .push(adapter_ratings.last + 3)
     end
 
-    def jolt_jump_log
-        return @jolt_jump_log if @jolt_jump_log
+    def jolt_jump_count
+        return @jolt_jump_count if @jolt_jump_count
         
-        @jolt_jump_log = Hash.new(0)
-        prev_jolt_rating = 0
-        @adapter_ratings.each do |jolt_rating|
-            difference = jolt_rating - prev_jolt_rating
-            raise "jolt rating difference is greater than 3" if difference > 3
-            @jolt_jump_log[difference] += 1
-            prev_jolt_rating = jolt_rating
+        @jolt_jump_count = Hash.new(0)
+        (0...@adapter_ratings.length).each do |i|
+            count_jolt_difference!(@jolt_jump_count, i)
         end
+        @jolt_jump_count
+    end
 
-        @jolt_jump_log
+    def count_jolt_difference!(count, adapter_rating_index)
+        return count if adapter_rating_index.zero?
+        jolt_rating = @adapter_ratings[adapter_rating_index]
+        prev_jolt_rating = @adapter_ratings[adapter_rating_index - 1]
+        difference = jolt_rating - prev_jolt_rating
+        count[difference] += 1
     end
 
     def part_1_answer
-        jolt_jump_log[1] * (jolt_jump_log[3])
+        jolt_jump_count[1] * jolt_jump_count[3]
     end
 
     def part_2_answer
