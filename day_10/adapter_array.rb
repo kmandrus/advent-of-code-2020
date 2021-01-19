@@ -33,10 +33,8 @@ class Adapter_Array
     end
 
     def part_2_answer
-        debugger
         @adapters.unshift(0)
         @adapter_arrangements = {}
-        @adapter_arrangements[0] = 1
         @adapters.each_with_index do |rating, i|
             #put into helpter or think of something better
             bot = i - 3
@@ -46,7 +44,11 @@ class Adapter_Array
                 .select { |connection| connection + 3 >= rating }
             sum = connections
                 .sum { |connection| @adapter_arrangements[connection] }
-            @adapter_arrangements[rating] = sum
+            if rating == 0
+                @adapter_arrangements[rating] = 1
+            else
+                @adapter_arrangements[rating] = sum
+            end
         end
         @adapter_arrangements[@adapters.last]
     end
@@ -55,9 +57,12 @@ class Adapter_Array
 end
 
 aa = Adapter_Array.new("input.txt")
-#puts aa.part_1_answer
+puts aa.part_1_answer
 puts aa.part_2_answer
 
 #testing
-#test_aa = Adapter_Array.new("test_input.txt")
-#p test_aa.adapter_arrangement_tree.count == 7
+# test_aa = Adapter_Array.new("test_input.txt")
+# puts test_aa.part_2_answer == 7
+
+
+
