@@ -41,14 +41,17 @@ class Adapter_Array
     end
 
     def valid_connections(adapter)
-        return [] if (to_index(adapter) - 1).negative?
-        
-        lower_slice_index = to_index(adapter) - 3
-        lower_slice_index = 0 if lower_slice_index.negative?
-        potential_connection_indices = (lower_slice_index...to_index(adapter))
+        return [] if is_charger?(adapter)
 
-        @adapters[potential_connection_indices]
-            .select { |connection| can_connect?(adapter, connection) }
+        connections = []
+        i = (to_index(adapter) - 1)
+        connection = @adapters[i]
+        while ( can_connect?(adapter, connection) && i >= 0 )
+            connections << connection
+            i -= 1
+            connection = @adapters[i]
+        end
+        connections
     end
 
     def can_connect?(adapter_1, adapter_2)
