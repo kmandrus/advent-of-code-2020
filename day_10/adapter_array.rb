@@ -36,17 +36,17 @@ class Adapter_Array
         @memorized_ways = { 0 => 1 } unless @memorized_ways
         return @memorized_ways[adapter] if @memorized_ways[adapter]
         
-        @memorized_ways[adapter] = valid_connections(adapter)
+        @memorized_ways[adapter] = lower_jolt_connections(adapter)
             .sum { |connection| ways_to_reach_charger(connection) }
     end
 
-    def valid_connections(adapter)
+    def lower_jolt_connections(adapter)
         return [] if is_charger?(adapter)
 
         connections = []
         i = (to_index(adapter) - 1)
         connection = @adapters[i]
-        while ( can_connect?(adapter, connection) && i >= 0 )
+        while can_connect?(adapter, connection) && i >= 0
             connections << connection
             i -= 1
             connection = @adapters[i]
