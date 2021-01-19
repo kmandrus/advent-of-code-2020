@@ -15,17 +15,16 @@ class Adapter_Array
         return @jolt_jump_count if @jolt_jump_count
         
         @jolt_jump_count = Hash.new(0)
-        (0...adapters.length).each do |i|
-            count_jolt_difference!(@jolt_jump_count, i)
+        @adapters.each do |adapter|
+            count_jolt_difference!(@jolt_jump_count, adapter)
         end
         @jolt_jump_count
     end
 
-    def count_jolt_difference!(count, adapter_rating_index)
-        return count if adapter_rating_index.zero?
-        jolt_rating = @adapters[adapter_rating_index]
-        prev_jolt_rating = @adapters[adapter_rating_index - 1]
-        difference = jolt_rating - prev_jolt_rating
+    def count_jolt_difference!(count, adapter)
+        return count if is_charger?(adapter)
+        prev_adapter = @adapters[to_index(adapter) - 1]
+        difference = adapter - prev_adapter
         count[difference] += 1
     end
 
