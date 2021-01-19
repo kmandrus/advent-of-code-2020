@@ -41,15 +41,18 @@ class Adapter_Array
     end
 
     def valid_connections(adapter)
-        adapter_index = to_index(adapter)
-        return [] if (adapter_index - 1).negative?
+        return [] if (to_index(adapter) - 1).negative?
         
-        lower_slice_index = adapter_index - 3
+        lower_slice_index = to_index(adapter) - 3
         lower_slice_index = 0 if lower_slice_index.negative?
-        potential_connection_indices = (lower_slice_index...adapter_index)
+        potential_connection_indices = (lower_slice_index...to_index(adapter))
 
         @adapters[potential_connection_indices]
-            .select { |connection| connection + 3 >= adapter }
+            .select { |connection| can_connect?(adapter, connection) }
+    end
+
+    def can_connect?(adapter_1, adapter_2)
+        (adapter_1 - adapter_2).abs <= 3
     end
 
     def load_adapter_ratings(filepath)
