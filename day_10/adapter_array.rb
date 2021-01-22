@@ -54,7 +54,7 @@ class Adapter_Array
         connections = []
         i = (to_index(adapter) - 1)
         connection = @adapters[i]
-        while can_connect?(adapter, connection) && i >= 0
+        while valid_connection?(adapter, connection) && i >= 0
             connections << connection
             i -= 1
             connection = @adapters[i]
@@ -62,7 +62,7 @@ class Adapter_Array
         connections
     end
 
-    def can_connect?(adapter_1, adapter_2)
+    def valid_connection?(adapter_1, adapter_2)
         (adapter_1 - adapter_2).abs <= 3
     end
 
