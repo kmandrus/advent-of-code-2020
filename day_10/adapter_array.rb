@@ -52,11 +52,11 @@ class Adapter_Array
 
         connections = []
         i = (to_index(adapter) - 1)
-        connection = @adapters[i]
-        while valid_connection?(adapter, connection) && i >= 0
-            connections << connection
+        potential_connection = @adapters[i]
+        while valid_connection?(adapter, potential_connection) && i >= 0
+            connections << potential_connection
             i -= 1
-            connection = @adapters[i]
+            potential_connection = @adapters[i]
         end
         connections
     end
