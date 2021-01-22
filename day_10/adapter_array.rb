@@ -1,13 +1,12 @@
 require "byebug"
 
 class Adapter_Array
-    attr_reader :adapters
 
     def initialize(filepath)
-        @adapters = load_adapter_ratings(filepath)
+        @adapters = load_adapters(filepath)
     end
 
-    def load_adapter_ratings(filepath)
+    def load_adapters(filepath)
         adapters = File.readlines(filepath, chomp: true)
             .map(&:to_i)
             .sort
