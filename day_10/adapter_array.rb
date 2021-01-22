@@ -7,25 +7,33 @@ class Adapter_Array
         @adapters = load_adapter_ratings(filepath)
     end
 
+    def load_adapter_ratings(filepath)
+        adapters = File.readlines(filepath, chomp: true)
+            .map(&:to_i)
+            .sort
+        add_charger_and_device(adapters)
+    end
+
+    def add_charger_and_device(adapters)
+        adapters.dup
+            .unshift(0)
+            .push(adapters.last + 3)
+    end
+
     def part_1_answer
-        jolt_jump_count[1] * jolt_jump_count[3]
+        jolt_differences[1] * jolt_differences[3]
     end
 
-    def jolt_jump_count
-        return @jolt_jump_count if @jolt_jump_count
-        
-        @jolt_jump_count = Hash.new(0)
-        @adapters.each do |adapter|
-            count_jolt_difference!(@jolt_jump_count, adapter)
+    def jolt_differences
+        return @count if @count
+
+        @count = Hash.new(0)
+        @adapters.each_with_index do |adapter, i|
+            next if is_charger?(adapter)
+            prev_adapter = @adapters[i-1]
+            @count[adapter - prev_adapter] += 1
         end
-        @jolt_jump_count
-    end
-
-    def count_jolt_difference!(count, adapter)
-        return count if is_charger?(adapter)
-        prev_adapter = @adapters[to_index(adapter) - 1]
-        difference = adapter - prev_adapter
-        count[difference] += 1
+        @count
     end
 
     def part_2_answer
@@ -56,19 +64,6 @@ class Adapter_Array
 
     def can_connect?(adapter_1, adapter_2)
         (adapter_1 - adapter_2).abs <= 3
-    end
-
-    def load_adapter_ratings(filepath)
-        adapters = File.readlines(filepath, chomp: true)
-            .map(&:to_i)
-            .sort
-        add_charger_and_device!(adapters)
-    end
-
-    def add_charger_and_device!(adapters)
-        adapters
-            .unshift(0)
-            .push(adapters.last + 3)
     end
 
     def to_index(adapter)
