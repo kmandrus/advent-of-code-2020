@@ -3,9 +3,8 @@ require 'byebug'
 class Report_Repair
     attr_reader :report, :sorted_report
 
-    def initialize(report_file_path)
-        report = File.readlines(report_file_path, chomp: true)
-        @report = report.map(&:to_i)
+    def initialize(report)
+        @report = report
         @sorted_report = merge_sort(@report)
     end
 
@@ -37,6 +36,7 @@ class Report_Repair
         end
         sorted
     end
+
     def binary_search(sorted_nums, target)
         return nil if sorted_nums.empty?
         mid = sorted_nums.length / 2
@@ -90,17 +90,4 @@ class Report_Repair
     end
 end
 
-report_repair = Report_Repair.new("./input.txt")
-nums = report_repair.three_sum_to(report_repair.sorted_report, 2020)
-p nums
-p nums[0] * nums[1] * nums[2]
 
-#tests
-puts "\ntests"
-p report_repair.binary_search(report_repair.sorted_report, 769) == 7
-p report_repair.binary_search(report_repair.sorted_report, 1994) == 190
-p report_repair.binary_search(report_repair.sorted_report, -10) == nil
-p report_repair.two_sum_to(report_repair.sorted_report, 1768 + 1995).sum == 1768 + 1995
-p report_repair.two_sum_to(report_repair.sorted_report, 451 + 1252).sum == 451 + 1252
-p report_repair.two_sum_to(report_repair.sorted_report, -1) == nil
-p report_repair.three_sum_to(report_repair.sorted_report, 769 + 1190 + 2008).sum == 769 + 1190 + 2008
