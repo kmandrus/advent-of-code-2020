@@ -9,16 +9,16 @@ def loadWaitingArea(filepath):
             row = []
         return waitingArea
 
-waitingArea = loadWaitingArea('input.txt')
+emptyArea = loadWaitingArea('input.txt')
 
-def printWaitingArea(area):
+def printArea(area):
     for row in area:
         for seat in row:
             print(seat, end='')
         print('')
 
-#for row in waitingArea:
-#    print(f"{row}\n", end='')
+
+diffs = [(1, 0), (1, 1), (1, -1), (0, 1), (0, -1), (-1, 0), (-1, -1), (-1, 1)]
 
 def emptySeat():
     return 'L'
@@ -29,19 +29,42 @@ def occupiedSeat():
 def floor():
     return '.'
 
-def inWaitingArea(row, col):
-    width = len(waitingArea[0])
-    height = len(waitingArea)
+def isInArea(pos):
+    row, col = pos
+    width = len(emptyArea[0])
+    height = len(emptyArea)
     return (col >= 0 and row >= 0 and row < height and col < width)
 
-def adjacentSeats(row, col, waitingArea):
-    diffs = [ (1, 0), (1, 1), (1, -1), (0, 1), (0, -1), (-1, 0), (-1, -1), (-1, 1) ]
+def adjacentSeats(pos, area):
     seats = []
     for diff in diffs:
-        dY, dX = diff
-        x, y = col + dX, row + dY
-        if inWaitingArea(y, x):
-            seats.append(waitingArea[y][x])
+        pos = applyDiff(pos, diff)
+        if isInArea(pos):
+            seats.append(area[pos[0]][pos[1]])
+    return seats
+
+def seatAt(pos, area):
+    row, col = pos
+    return area[row][col]
+
+def applyDiff(pos, diff):
+    return (pos[0] + diff[0], pos[1] + diff[1])
+
+def firstSeatAlongDiff(start, diff, area):
+    nextPos = applyDiff(start, diff)
+    while isInArea(nextPos) and seatAt(nextPos, area) == floor():
+        nextPos = applyDiff(nextPos, diff)
+    if not isInArea(nextPos):
+        return None
+    else:
+        return seatAt(nextPos, area)
+
+def visibleSeats(pos, area):
+    seats = []
+    for diff in diffs:
+        seat = firstSeatAlongDiff(pos, diff, area)
+        if seat:
+            seats.append(seat)
     return seats
 
 def newSeatState(seat, adjSeats):
@@ -55,13 +78,36 @@ def newSeatState(seat, adjSeats):
     else:
         return seat
 
-def nextWaitingAreaState(waitingArea):
+def newSeatUsingVisible(originalSeat, visibleSeats):
+    occupiedSeats = visibleSeats.count(occupiedSeat())
+    if originalSeat == floor():
+        return floor()
+    elif occupiedSeats == 0:
+        return occupiedSeat()
+    elif occupiedSeats >= 5:
+        return emptySeat()
+    else:
+        return originalSeat
+
+def nextStateUsingAdjacentSeats(area):
     nextState = []
-    for row_num, row in enumerate(waitingArea):
+    for row_num, row in enumerate(area):
         newRow = []
         for seat_num, seat in enumerate(row):
-            adjSeats = adjacentSeats(row_num, seat_num, waitingArea)
+            adjSeats = adjacentSeats((row_num, seat_num), area)
             newSeat = newSeatState(seat, adjSeats)
+            newRow.append(newSeat)
+        nextState.append(newRow)
+        newRow = []
+    return nextState
+
+def nextStateUsingVisibleSeats(area):
+    nextState = []
+    for row_num, row in enumerate(area):
+        newRow = []
+        for seat_num, seat in enumerate(row):
+            visible = visibleSeats((row_num, seat_num), area)
+            newSeat = newSeatUsingVisible(seat, visible)
             newRow.append(newSeat)
         nextState.append(newRow)
         newRow = []
@@ -87,9 +133,16 @@ def countOccupiedSeats(area):
 
 
 #Output
-states = [waitingArea, nextWaitingAreaState(waitingArea)]
+states = [emptyArea, nextStateUsingAdjacentSeats(emptyArea)]
 while countDifferences(states[-1], states[-2]) > 0:
-    states.append(nextWaitingAreaState(states[-1]))
-printWaitingArea(states[-1])
+    states.append(nextStateUsingAdjacentSeats(states[-1]))
+printArea(states[-1])
+print(f"number of states: {len(states)}")
+print(f"seats occupied: {countOccupiedSeats(states[-1])}")
+
+states = [emptyArea, nextStateUsingVisibleSeats(emptyArea)]
+while countDifferences(states[-1], states[-2]) > 0:
+     states.append(nextStateUsingVisibleSeats(states[-1]))
+printArea(states[-1])
 print(f"number of states: {len(states)}")
 print(f"seats occupied: {countOccupiedSeats(states[-1])}")
