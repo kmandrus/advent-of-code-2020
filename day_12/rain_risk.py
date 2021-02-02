@@ -30,19 +30,21 @@ class OceanTravelMixin:
     def move_pos(self, pos, delta):
         return (pos[0] + delta[0], pos[1] + delta[1])
     
+    def move_delta(self, heading, distance):
+        diff = self.diffs_by_heading[heading]
+        return (diff[0] * distance, diff[1] * distance)
+    
     def subtract_positions(self, minuend, subtrahend):
         return (minuend[0] - subtrahend[0], minuend[1] - subtrahend[1])
 
     def parse_step(self, str):
         return (str[:1], int(str[1:]))
     
-    def move_delta(self, heading, distance):
-        diff = self.diffs_by_heading[heading]
-        return (diff[0] * distance, diff[1] * distance)
-    
-    def to_quarter_turns(self, degrees):
-        return degrees // 90
-    
+    def to_quarter_turns(self, degrees, direction=right):
+        turns = degrees // 90
+        if direction == self.left:
+            turns *= -1
+        return turns
 
 class RouteFinder(OceanTravelMixin):
     
@@ -69,11 +71,10 @@ class RouteFinder(OceanTravelMixin):
         self.pos = self.move_pos(self.pos, delta)
         
     def rotate(self, turn_direction, degrees):
-        quarter_turns = degrees // 90
-        if turn_direction == self.left:
-            quarter_turns *= -1
-        heading_idx = self.headings.index(self.heading)
-        self.heading = self.headings[(heading_idx + quarter_turns) % 4]
+        quarter_turns = self.to_quarter_turns(degrees, turn_direction)
+        current_heading_idx = self.headings.index(self.heading)
+        new_heading_index = (current_heading_idx + quarter_turns) % 4
+        self.heading = self.headings[new_heading_index]
 
 class WaypointRouteFinder(OceanTravelMixin):
     rotation_diffs_by_axis = { 0:(1,0), 1:(0,1), 2:(-1,0), 3:(0,-1) }
