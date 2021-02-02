@@ -39,6 +39,10 @@ class OceanTravelMixin:
     def move_delta(self, heading, distance):
         diff = self.diffs_by_heading[heading]
         return (diff[0] * distance, diff[1] * distance)
+    
+    def to_quarter_turns(self, degrees):
+        return degrees // 90
+    
 
 class RouteFinder(OceanTravelMixin):
     
@@ -85,18 +89,12 @@ class WaypointRouteFinder(OceanTravelMixin):
         for i in range(times):
             self.pos = self.add_positions(self.pos, self.waypoint)
 
-    def rotate_waypoint_around_origin(self, turn_direction, degrees):
-        num_turns = degrees // 90
-        new_waypoint = self.waypoint
-        for _ in range(num_turns):
-            if turn_direction == self.right:
-                new_waypoint = self.rotate_pos_around_origin_90deg_right(
-                    new_waypoint)
-            else:
-                new_waypoint = self.rotate_pos_around_origin_90deg_left(
-                    new_waypoint)
-        self.waypoint = new_waypoint
-    
+    def rotate_waypoint_about_origin(self, turn_direction, degrees):
+        for _ in range(self.to_quarter_turns(degrees)):
+            self.waypoint = self.rotate_about_origin_90_degrees(
+                self.waypoint, 
+                turn_direction)
+
     def move_waypoint(self, heading, distance):
         move_tuple = self.move_delta(heading, distance)
         self.waypoint = self.add_positions(self.waypoint, move_tuple)
@@ -105,16 +103,15 @@ class WaypointRouteFinder(OceanTravelMixin):
         for step in self.route:
             cmd, arg = self.parse_step(step)
             if cmd == self.right or cmd == self.left:
-                self.rotate_waypoint_around_origin(cmd, arg)
+                self.rotate_waypoint_about_origin(cmd, arg)
             elif cmd == self.forward:
                 self.move(arg)
             else:
                 self.move_waypoint(cmd, arg)
     
-    def rotate_pos_around_origin_90deg_right(self, pos):
+    def rotate_about_origin_90_degrees(self, pos, direction):
         x, y = pos
-        return (y, -x)
-    
-    def rotate_pos_around_origin_90deg_left(self, pos):
-        x, y = pos
-        return (-y, x)
+        if direction == self.right:
+            return (y, -x)
+        else:
+            return (-y, x)
