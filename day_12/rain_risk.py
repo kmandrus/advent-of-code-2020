@@ -27,8 +27,8 @@ class OceanTravelMixin:
         delta_x, delta_y = self.subtract_positions(start, end)
         return abs(delta_x) + abs(delta_y)
     
-    def add_positions(self, pos_1, pos_2):
-        return (pos_1[0] + pos_2[0], pos_1[1] + pos_2[1])
+    def move_pos(self, pos, delta):
+        return (pos[0] + delta[0], pos[1] + delta[1])
     
     def subtract_positions(self, minuend, subtrahend):
         return (minuend[0] - subtrahend[0], minuend[1] - subtrahend[1])
@@ -63,11 +63,11 @@ class RouteFinder(OceanTravelMixin):
     
     def move(self, heading, distance):
         if heading == self.forward:
-            move_tuple = self.move_delta(self.heading, distance)
+            delta = self.move_delta(self.heading, distance)
         else:
-            move_tuple = self.move_delta(heading, distance)
-        self.pos = self.add_positions(self.pos, move_tuple)
-
+            delta = self.move_delta(heading, distance)
+        self.pos = self.move_pos(self.pos, delta)
+        
     def rotate(self, turn_direction, degrees):
         quarter_turns = degrees // 90
         if turn_direction == self.left:
@@ -87,7 +87,7 @@ class WaypointRouteFinder(OceanTravelMixin):
     
     def move(self, times):
         for i in range(times):
-            self.pos = self.add_positions(self.pos, self.waypoint)
+            self.pos = self.move_pos(self.pos, self.waypoint)
 
     def rotate_waypoint_about_origin(self, turn_direction, degrees):
         for _ in range(self.to_quarter_turns(degrees)):
@@ -96,8 +96,8 @@ class WaypointRouteFinder(OceanTravelMixin):
                 turn_direction)
 
     def move_waypoint(self, heading, distance):
-        move_tuple = self.move_delta(heading, distance)
-        self.waypoint = self.add_positions(self.waypoint, move_tuple)
+        delta = self.move_delta(heading, distance)
+        self.waypoint = self.move_pos(self.waypoint, delta)
 
     def travel_route(self):
         for step in self.route:
