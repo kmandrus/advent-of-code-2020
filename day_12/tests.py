@@ -12,8 +12,8 @@ print(route_finder.compute_manhattan_distance(
 ))
 print("part two answer:")
 print(wp_route_finder.compute_manhattan_distance(
-    route_finder.start,
-    route_finder.pos
+    wp_route_finder.start,
+    wp_route_finder.pos
 ))
 
 print("-" * 40)
@@ -41,11 +41,11 @@ print(test_route_finder.parse_step('L90') == ('L', 90))
 print(test_route_finder.parse_step('F5') == ('F', 5))
 print(test_route_finder.parse_step('W20') == ('W', 20))
 
-print("#compute_move_tuple")
-print(test_route_finder.compute_move_tuple('W', 30) == (-30, 0))
-print(test_route_finder.compute_move_tuple('S', 1) == (0, -1))
-print(test_route_finder.compute_move_tuple('N', 109) == (0, 109))
-print(test_route_finder.compute_move_tuple('E', 12) == (12, 0))
+print("#move_delta")
+print(test_route_finder.move_delta('W', 30) == (-30, 0))
+print(test_route_finder.move_delta('S', 1) == (0, -1))
+print(test_route_finder.move_delta('N', 109) == (0, 109))
+print(test_route_finder.move_delta('E', 12) == (12, 0))
 
 print("#move")
 
