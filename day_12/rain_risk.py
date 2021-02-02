@@ -8,9 +8,13 @@
 #multiply each value by 30, then add the resulting tuple to our current 
 #location.
 
+def parse_line(str):
+    return (str[:1], int(str[1:]))
+
 def load_input(filepath):
     with open(filepath) as file:
-        return file.readlines() 
+        return [parse_line(line) for line in file.readlines()]
+ 
 
 class OceanTravelMixin:
     north, south, east, west, forward = 'N', 'S', 'E', 'W', 'F'
@@ -30,15 +34,12 @@ class OceanTravelMixin:
     def move_pos(self, pos, delta):
         return (pos[0] + delta[0], pos[1] + delta[1])
     
-    def move_delta(self, heading, distance):
+    def compute_delta(self, heading, distance):
         diff = self.diffs_by_heading[heading]
         return (diff[0] * distance, diff[1] * distance)
     
     def subtract_positions(self, minuend, subtrahend):
         return (minuend[0] - subtrahend[0], minuend[1] - subtrahend[1])
-
-    def parse_step(self, str):
-        return (str[:1], int(str[1:]))
     
     def to_quarter_turns(self, degrees, direction=right):
         turns = degrees // 90
@@ -56,8 +57,7 @@ class RouteFinder(OceanTravelMixin):
         self.travel_route()
 
     def travel_route(self):
-        for step in self.route:
-            cmd, arg = self.parse_step(step)
+        for cmd, arg in self.route:
             if cmd == self.right or cmd == self.left:
                 self.rotate(cmd, arg)
             else:
@@ -65,9 +65,9 @@ class RouteFinder(OceanTravelMixin):
     
     def move(self, heading, distance):
         if heading == self.forward:
-            delta = self.move_delta(self.heading, distance)
+            delta = self.compute_delta(self.heading, distance)
         else:
-            delta = self.move_delta(heading, distance)
+            delta = self.compute_delta(heading, distance)
         self.pos = self.move_pos(self.pos, delta)
         
     def rotate(self, turn_direction, degrees):
@@ -97,12 +97,11 @@ class WaypointRouteFinder(OceanTravelMixin):
                 turn_direction)
 
     def move_waypoint(self, heading, distance):
-        delta = self.move_delta(heading, distance)
+        delta = self.compute_delta(heading, distance)
         self.waypoint = self.move_pos(self.waypoint, delta)
 
     def travel_route(self):
-        for step in self.route:
-            cmd, arg = self.parse_step(step)
+        for cmd, arg in self.route:
             if cmd == self.right or cmd == self.left:
                 self.rotate_waypoint_about_origin(cmd, arg)
             elif cmd == self.forward:
