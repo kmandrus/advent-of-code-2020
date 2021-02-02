@@ -36,7 +36,7 @@ class OceanTravelMixin:
     def parse_step(self, str):
         return (str[:1], int(str[1:]))
     
-    def compute_move_tuple(self, heading, distance):
+    def move_delta(self, heading, distance):
         diff = self.diffs_by_heading[heading]
         return (diff[0] * distance, diff[1] * distance)
 
@@ -59,9 +59,9 @@ class RouteFinder(OceanTravelMixin):
     
     def move(self, heading, distance):
         if heading == self.forward:
-            move_tuple = self.compute_move_tuple(self.heading, distance)
+            move_tuple = self.move_delta(self.heading, distance)
         else:
-            move_tuple = self.compute_move_tuple(heading, distance)
+            move_tuple = self.move_delta(heading, distance)
         self.pos = self.add_positions(self.pos, move_tuple)
 
     def rotate(self, turn_direction, degrees):
@@ -98,7 +98,7 @@ class WaypointRouteFinder(OceanTravelMixin):
         self.waypoint = new_waypoint
     
     def move_waypoint(self, heading, distance):
-        move_tuple = self.compute_move_tuple(heading, distance)
+        move_tuple = self.move_delta(heading, distance)
         self.waypoint = self.add_positions(self.waypoint, move_tuple)
 
     def travel_route(self):
