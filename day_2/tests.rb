@@ -1,5 +1,5 @@
-require_relative "passwords.rb"
-require_relative "octp_passwords.rb"
+require_relative "password_validator.rb"
+require_relative "password_validator_otcp.rb"
 
 puts "TESTS\n"
 puts "PasswordValidator"
