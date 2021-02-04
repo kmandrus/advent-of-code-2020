@@ -1,4 +1,4 @@
-class Passwords
+class PasswordValidator
 
     def count_of_valid_passwords(filepath)
         valid_password_count = 0
@@ -8,7 +8,7 @@ class Passwords
             valid_password_count += 1 if valid_password?(password_hash) 
         end
         file.close
-        puts valid_password_count
+        valid_password_count
     end
 
     def parse_line(line)
@@ -34,12 +34,3 @@ class Passwords
         count
     end
 end
-
-passwords = Passwords.new
-puts passwords.count_of_valid_passwords("input.txt")
-
-#tests
-# puts "\ntests"
-# p passwords.count_letter('n', 'nnnnnnnnnnnnnnnnrnsn')
-# pass_hash = passwords.parse_line("17-19 n: nnnnnnnnnnnnnnnnrnsn")
-# p passwords.valid_password?(pass_hash)

@@ -1,4 +1,4 @@
-class OCTP_Passwords
+class PasswordValidatorOTCP
     def count_of_valid_passwords(filepath)
         valid_password_count = 0
         file = File.open(filepath)
@@ -7,7 +7,7 @@ class OCTP_Passwords
             valid_password_count += 1 if valid_password?(password_hash) 
         end
         file.close
-        puts valid_password_count
+        valid_password_count
     end
 
     def parse_line(line)
@@ -39,6 +39,3 @@ class OCTP_Passwords
         string[pos - 1] == letter
     end
 end
-
-passwords = OCTP_Passwords.new
-puts passwords.count_of_valid_passwords("input.txt")
