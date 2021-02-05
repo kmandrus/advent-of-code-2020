@@ -1,27 +1,36 @@
 class PasswordValidator
 
-    def count_of_valid_passwords(filepath)
-        valid_password_count = 0
-        file = File.open(filepath)
-        file.each do |line|
-            password_hash = parse_line(line)
-            valid_password_count += 1 if valid_password?(password_hash) 
-        end
-        file.close
-        valid_password_count
+    def self.initialize_with_file(filepath)
+        password_hashes = File.readlines(filepath, chomp: true)
+            .map { |str| PasswordValidator.to_password_hash(str) }
+        PasswordValidator.new(password_hashes)
     end
 
-    def parse_line(line)
-        split_line = line.split
-        min_max = split_line[0]
+    def self.to_password_hash(str)
+        split_str = str.split
+        min_and_max = split_str[0]
             .split('-')
             .map(&:to_i)
         {
-            min: min_max.first,
-            max: min_max.last,
-            required_letter: split_line[1][0],
-            password: split_line[2]
+            min: min_and_max.first,
+            max: min_and_max.last,
+            required_letter: split_str[1][0],
+            password: split_str[2]
         }
+    end
+
+    def initialize(password_hashes)
+        @password_hashes = password_hashes
+    end
+
+    def num_valid_passwords
+        @valid_password_count ||= fetch_num_valid_passwords
+    end
+
+    def fetch_num_valid_passwords
+        count = 0
+        @password_hashes.each { |hash| count += 1 if valid_password?(hash) }
+        count
     end
 
     def valid_password?(pass_hash)
