@@ -10,5 +10,5 @@ p validator.valid_password?(pass_hash) == true
 p (validator.num_valid_passwords == 614)
 
 puts "PasswordValidatorOTCP"
-validator_otcp = PasswordValidatorOTCP.new
-p validator_otcp.count_of_valid_passwords('input.txt') == 354
+validator_otcp = PasswordValidatorOTCP.initialize_with_file('input.txt')
+p validator_otcp.num_valid_passwords == 354

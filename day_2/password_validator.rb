@@ -1,9 +1,12 @@
 class PasswordValidator
 
     def self.initialize_with_file(filepath)
-        password_hashes = File.readlines(filepath, chomp: true)
-            .map { |str| PasswordValidator.to_password_hash(str) }
-        PasswordValidator.new(password_hashes)
+        self.new(load_password_hashes_from(filepath))
+    end
+
+    def self.load_password_hashes_from(filepath)
+        File.readlines(filepath, chomp: true)
+            .map { |str| self.to_password_hash(str) }
     end
 
     def self.to_password_hash(str)
@@ -37,6 +40,7 @@ class PasswordValidator
         count = count_letter(pass_hash[:required_letter], pass_hash[:password])
         count <= pass_hash[:max] && count >= pass_hash[:min]
     end
+
     def count_letter(letter, word)
         count = 0
         word.each_char { |char| count += 1 if char == letter }
