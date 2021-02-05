@@ -1,8 +1,8 @@
-require_relative "password_validator.rb"
-require_relative "password_validator_octp.rb"
+require_relative "toboggan_corporate_password_validator.rb"
+require_relative "sled_rental_shop_password_validator.rb"
 
-validator = PasswordValidator.new
-puts validator.count_of_valid_passwords("input.txt")
+validator = SledRentalShopPasswordValidator.initialize_with_file('input.txt')
+puts validator.num_valid_passwords
 
-validator_otcp = PasswordValidatorOTCP.new
-puts validator_otcp.count_of_valid_passwords("input.txt")
+validator_otcp = TobogganCorporatePasswordValidator.initialize_with_file('input.txt')
+puts validator_otcp.num_valid_passwords

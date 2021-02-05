@@ -10,18 +10,10 @@ class PasswordValidator
     end
 
     def self.to_password_hash(str)
-        split_str = str.split
-        min_and_max = split_str[0]
-            .split('-')
-            .map(&:to_i)
-        {
-            min: min_and_max.first,
-            max: min_and_max.last,
-            required_letter: split_str[1][0],
-            password: split_str[2]
-        }
+        raise "subclass must implement"
     end
 
+    public
     def initialize(password_hashes)
         @password_hashes = password_hashes
     end
@@ -30,6 +22,7 @@ class PasswordValidator
         @valid_password_count ||= fetch_num_valid_passwords
     end
 
+    private
     def fetch_num_valid_passwords
         @password_hashes.inject(0) do |count, hash| 
             valid_password?(hash) ? count += 1 : count
@@ -37,13 +30,6 @@ class PasswordValidator
     end
 
     def valid_password?(pass_hash)
-        count = count_letter(pass_hash[:required_letter], pass_hash[:password])
-        count <= pass_hash[:max] && count >= pass_hash[:min]
-    end
-
-    def count_letter(letter, word)
-        count = 0
-        word.each_char { |char| count += 1 if char == letter }
-        count
+        raise "subclass must implement"
     end
 end
