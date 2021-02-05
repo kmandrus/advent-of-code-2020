@@ -28,9 +28,9 @@ class PasswordValidator
     end
 
     def fetch_num_valid_passwords
-        count = 0
-        @password_hashes.each { |hash| count += 1 if valid_password?(hash) }
-        count
+        @password_hashes.inject(0) do |count, hash| 
+            valid_password?(hash) ? count += 1 : count
+        end
     end
 
     def valid_password?(pass_hash)
